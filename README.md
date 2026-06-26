@@ -44,3 +44,14 @@ Incluye los flujos:
 - `sky-rebuild-tag-chain`
 - `sky-v2-*`
 - `sky-gitlab-*`
+
+## Secciones
+
+- Decision rapida por caso de uso.
+- Flujo Stage normal.
+- Release por epica o multi-ticket.
+- Rearmar tags ya creados.
+- Release-Unit V2.
+- Matriz de skills.
+- Casos edge que las validaciones evitan.
+- Reglas criticas y ejemplos rapidos.

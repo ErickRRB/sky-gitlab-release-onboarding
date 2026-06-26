@@ -206,7 +206,8 @@
 
       .decision-grid,
       .cards,
-      .rules-grid {
+      .rules-grid,
+      .edge-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 14px;
@@ -214,7 +215,8 @@
 
       .case-card,
       .skill-card,
-      .rule-card {
+      .rule-card,
+      .edge-card {
         min-width: 0;
         padding: 16px;
         border: 1px solid var(--line);
@@ -224,17 +226,43 @@
 
       .case-card h4,
       .skill-card h4,
-      .rule-card h4 {
+      .rule-card h4,
+      .edge-card h4 {
         margin: 0 0 8px;
         font-size: 1.02rem;
       }
 
       .case-card p,
       .skill-card p,
-      .rule-card p {
+      .rule-card p,
+      .edge-card p {
         margin: 0;
         color: var(--muted);
         font-size: 0.94rem;
+      }
+
+      .edge-card {
+        display: grid;
+        gap: 10px;
+      }
+
+      .edge-card dl {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+      }
+
+      .edge-card dt {
+        color: #33465a;
+        font-size: 0.76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .edge-card dd {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 0.92rem;
       }
 
       .tag {
@@ -389,6 +417,7 @@
         .decision-grid,
         .cards,
         .rules-grid,
+        .edge-grid,
         .split {
           grid-template-columns: 1fr 1fr;
         }
@@ -410,6 +439,7 @@
         .decision-grid,
         .cards,
         .rules-grid,
+        .edge-grid,
         .split {
           grid-template-columns: 1fr;
         }
@@ -436,6 +466,7 @@
           <a href="#tag-chain">Rearmar tags</a>
           <a href="#v2">Release-Unit V2</a>
           <a href="#matrix">Skills</a>
+          <a href="#edge-cases">Casos edge</a>
           <a href="#rules">Reglas criticas</a>
           <a href="#examples">Ejemplos</a>
         </nav>
@@ -802,6 +833,320 @@
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </section>
+
+          <section id="edge-cases" class="band">
+            <h3>Casos edge que las validaciones evitan</h3>
+            <p>
+              Estos son errores frecuentes cuando el flujo se hace manualmente.
+              Las skills no solo ejecutan comandos: tambien ponen checks para
+              detectar el problema antes de publicar branch, tag o MR.
+            </p>
+            <div class="edge-grid">
+              <article class="edge-card">
+                <span class="tag red">base incorrecta</span>
+                <h4>Usar un tag local viejo como base</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>La rama se arma sobre un tag local que ya no coincide con remoto.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd><code>git fetch --tags</code>, refs remotas y commit peeled <code>vX.Y.Z^{}</code>.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/feature-branch</code>, <code>/sky-rebuild-tag-chain</code>, <code>/sky-v2-prepare-release</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag red">tag mal apuntado</span>
+                <h4>Crear el tag sobre el merge commit</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>El tag incluye cambios de <code>main</code> que no pertenecen al release.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd><code>create-tag.sh</code>, <code>dod-check.sh</code> y validacion de peeled commit.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-tag-creator</code> dentro del flujo padre.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag amber">mensaje tag</span>
+                <h4>Reusar un mensaje de tag viejo</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>El tag queda con notas stale, bullets no linkeados o texto que no existe en changelog.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Mensaje generado desde la seccion <code>[X.Y.Z]</code> del changelog en el release commit.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-tag-creator</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag amber">formato tag</span>
+                <h4>Publicar <code>STAGE-X.Y.Z</code> o sufijos raros</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>CI, changelog y deploy links no matchean el contrato Sky.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Validacion estricta de formato <code>vX.Y.Z</code>.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-tag-creator</code>, <code>/sky-prepare-deploy</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag red">changelog</span>
+                <h4>Duplicar o borrar versiones historicas</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>Al resolver merge, se pisa el changelog de <code>main</code> o se duplica <code>[X.Y.Z]</code>.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd><code>git diff origin/main..HEAD -- changelog.md</code> y regla de preservar historia de main.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/feature-branch</code>, <code>/sky-rebuild-tag-chain</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag red">drag-along</span>
+                <h4>Cherry-pick arrastra commits ajenos</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>Un commit que venia con merges trae archivos de otros tickets.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Extraccion de diff neto y revision de archivos por commit/autor.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/feature-branch</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag amber">staging</span>
+                <h4><code>git add .</code> sube ruido o secretos</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>Entran <code>.env</code>, logs, dumps, notas locales o cambios de otro ticket.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Staging por archivo, diff staged revisado y exclusion explicita de ruido.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-commit-changes</code>, <code>/sky-v2-commit-changes</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag amber">runtime</span>
+                <h4>Validar con Node incorrecto</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>Build o lockfile pasan/fallan por version local, no por la version real del repo.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Detectar <code>.nvmrc</code>, <code>.node-version</code> o <code>engines.node</code> antes de validar.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/feature-branch</code>, <code>/sky-prepare-deploy</code>, <code>/sky-v2-take-ticket</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag amber">lockfile</span>
+                <h4>Omitir lockfile cuando cambio dependencias</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>El tag publica <code>package.json</code> nuevo pero CI falla con lockfile desalineado.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd><code>npm ci</code> sobre worktree del tag y <code>lockfile-regen.sh</code>.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/feature-branch</code>, <code>/sky-prepare-deploy</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag red">retag</span>
+                <h4>Force-push de tag sin backup</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>Se pierde la referencia anterior y no queda forma simple de auditar o volver atras.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Backup <code>backup/vX.Y.Z-before-...</code> y verificacion object/peeled antes del push.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-rebuild-tag-chain</code>, <code>/sky-tag-creator</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag red">ancestry</span>
+                <h4>Tags correctos en archivos pero no en historia</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>El contenido parece bien, pero un tag posterior no desciende del hotfix base.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd><code>verify-tag-chain.sh</code> y <code>git merge-base --is-ancestor</code>.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-rebuild-tag-chain</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag red">squash</span>
+                <h4>Squash en MR de release/tag-chain</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>Se destruye la secuencia <code>feature -> bump/tag -> merge</code> que justifica el release.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Clasificacion de branch y regla de squash disabled para release/tag-chain.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-create-mr</code>, <code>/sky-v2-create-mr</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag amber">ambiguedad</span>
+                <h4>Renombrar tag mayor sin definir changelog</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>Se mezcla metadata-only bump con una promocion semantica de release.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Outcome gate: tipo, source tag, new tag, categorias, excepciones y MR esperado.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-rebuild-tag-chain</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag amber">V2</span>
+                <h4>Taggear todo <code>main</code> cuando main es QA</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>Stage/Prod recibe commits aprobados para QA pero no pertenecientes al deploy.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Manifest desde <code>baseTag</code> + trailers <code>Release-Unit</code>.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-v2-release-unit</code>, <code>/sky-v2-prepare-release</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag amber">trailers</span>
+                <h4>Squash commit sin metadata V2</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>Despues no se puede generar manifest confiable para release parcial.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd><code>git interpret-trailers --parse</code> y auditoria <code>release-unit-audit.py</code>.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/sky-v2-commit-changes</code>, <code>/sky-v2-create-mr</code>.</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="edge-card">
+                <span class="tag red">conflictos</span>
+                <h4>Dejar conflict markers en el merge</h4>
+                <dl>
+                  <div>
+                    <dt>Que pasa manualmente</dt>
+                    <dd>El branch compila o publica con <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> en archivos fuente o JSON.</dd>
+                  </div>
+                  <div>
+                    <dt>Check que lo evita</dt>
+                    <dd>Busqueda de markers <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;|=======|&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> antes del push final.</dd>
+                  </div>
+                  <div>
+                    <dt>Skill</dt>
+                    <dd><code>/feature-branch</code>, <code>/sky-rebuild-tag-chain</code>.</dd>
+                  </div>
+                </dl>
+              </article>
             </div>
           </section>
 
