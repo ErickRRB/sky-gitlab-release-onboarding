@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sky GitLab Release Onboarding</title>
+    <style>
+      :root {
+        --bg: #f6f8fb;
+        --surface: #ffffff;
+        --surface-soft: #eef3f7;
+        --ink: #16202a;
+        --muted: #5f6f7f;
+        --line: #d8e1ea;
+        --blue: #1769aa;
+        --green: #287a55;
+        --amber: #9a6418;
+        --red: #b34040;
+        --slate: #2e3b48;
+        --radius: 8px;
+        --shadow: 0 10px 28px rgba(22, 32, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.52;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      code {
+        padding: 0.1rem 0.32rem;
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        background: #f8fafc;
+        color: #26313c;
+        font-size: 0.92em;
+      }
+
+      pre {
+        margin: 0;
+        padding: 1rem;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #111827;
+        color: #e5edf5;
+        font-size: 0.92rem;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 28px 22px;
+        overflow-y: auto;
+        border-right: 1px solid var(--line);
+        background: #122033;
+        color: #f8fbff;
+      }
+
+      .sidebar p {
+        margin: 0.45rem 0 1.2rem;
+        color: #b8c7d9;
+        font-size: 0.94rem;
+      }
+
+      .sidebar h1 {
+        margin: 0;
+        font-size: 1.35rem;
+        line-height: 1.16;
+        letter-spacing: 0;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        margin-bottom: 12px;
+        padding: 0.25rem 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-radius: 999px;
+        color: #d9e7f7;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .nav {
+        display: grid;
+        gap: 6px;
+        margin-top: 24px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 0.58rem 0.7rem;
+        border-radius: 7px;
+        color: #eef6ff;
+        font-size: 0.92rem;
+      }
+
+      .nav a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        text-decoration: none;
+      }
+
+      .main {
+        min-width: 0;
+      }
+
+      .hero {
+        padding: 46px 44px 28px;
+        background: linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .hero h2 {
+        max-width: 920px;
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 4rem);
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+
+      .hero p {
+        max-width: 860px;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 1.08rem;
+      }
+
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 24px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 0.24rem 0.6rem;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--slate);
+        font-size: 0.84rem;
+        font-weight: 700;
+      }
+
+      .content {
+        display: grid;
+        gap: 26px;
+        padding: 32px 44px 56px;
+      }
+
+      section {
+        scroll-margin-top: 18px;
+      }
+
+      .band {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .band.soft {
+        background: var(--surface-soft);
+        box-shadow: none;
+      }
+
+      .band h3 {
+        margin: 0 0 14px;
+        font-size: 1.35rem;
+      }
+
+      .band > p {
+        max-width: 920px;
+        margin: 0 0 16px;
+        color: var(--muted);
+      }
+
+      .decision-grid,
+      .cards,
+      .rules-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .case-card,
+      .skill-card,
+      .rule-card {
+        min-width: 0;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+
+      .case-card h4,
+      .skill-card h4,
+      .rule-card h4 {
+        margin: 0 0 8px;
+        font-size: 1.02rem;
+      }
+
+      .case-card p,
+      .skill-card p,
+      .rule-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .tag {
+        display: inline-flex;
+        margin-bottom: 10px;
+        padding: 0.18rem 0.46rem;
+        border-radius: 5px;
+        background: #e9f2fb;
+        color: var(--blue);
+        font-size: 0.76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .tag.green {
+        background: #e8f4ed;
+        color: var(--green);
+      }
+
+      .tag.amber {
+        background: #fbf0df;
+        color: var(--amber);
+      }
+
+      .tag.red {
+        background: #fae8e8;
+        color: var(--red);
+      }
+
+      .flow {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 38px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+
+      .num {
+        display: inline-grid;
+        width: 32px;
+        height: 32px;
+        place-items: center;
+        border-radius: 50%;
+        background: #dceaf7;
+        color: var(--blue);
+        font-weight: 800;
+      }
+
+      .step h4 {
+        margin: 0 0 4px;
+      }
+
+      .step p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .matrix-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f0f5fa;
+        color: #24313e;
+        font-size: 0.84rem;
+        text-transform: uppercase;
+      }
+
+      td {
+        color: #2d3a47;
+        font-size: 0.94rem;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .callout {
+        border-left: 4px solid var(--blue);
+        padding: 14px 16px;
+        background: #edf6ff;
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+
+      .callout.warning {
+        border-left-color: var(--amber);
+        background: #fff7eb;
+      }
+
+      .callout.danger {
+        border-left-color: var(--red);
+        background: #fff0f0;
+      }
+
+      .callout p {
+        margin: 0;
+      }
+
+      .footer {
+        padding: 24px 44px 40px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 1060px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: relative;
+          height: auto;
+        }
+
+        .nav {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .decision-grid,
+        .cards,
+        .rules-grid,
+        .split {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .hero,
+        .content,
+        .footer {
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+
+        .hero h2 {
+          font-size: 2rem;
+        }
+
+        .nav,
+        .decision-grid,
+        .cards,
+        .rules-grid,
+        .split {
+          grid-template-columns: 1fr;
+        }
+
+        .band {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <span class="eyebrow">Sky onboarding</span>
+        <h1>GitLab, releases, tags y Stage</h1>
+        <p>
+          Guia corta para elegir la skill correcta cuando hay que commitear,
+          abrir MR, preparar deploy, crear tags o rearmar tags existentes.
+        </p>
+        <nav class="nav" aria-label="Indice">
+          <a href="#decision">Decision rapida</a>
+          <a href="#stage">Stage normal</a>
+          <a href="#release-notes">Release por epica</a>
+          <a href="#tag-chain">Rearmar tags</a>
+          <a href="#v2">Release-Unit V2</a>
+          <a href="#matrix">Skills</a>
+          <a href="#rules">Reglas criticas</a>
+          <a href="#examples">Ejemplos</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="hero">
+          <h2>Que skill usar para GitLab, Stage y tags</h2>
+          <p>
+            Esta pagina resume los casos comunes del flujo Sky. La idea es que
+            alguien nuevo pueda mirar el problema, elegir la skill correcta y
+            evitar los errores caros: tag mal apuntado, branch sucia, MR con
+            squash incorrecto o release construido desde el lugar equivocado.
+          </p>
+          <div class="meta-row" aria-label="Metadata">
+            <span class="pill">Fuente: SkySkills canonical</span>
+            <span class="pill">Actualizado: 2026-06-26</span>
+            <span class="pill">Scope: GitLab / Stage / tags</span>
+          </div>
+        </header>
+
+        <div class="content">
+          <section id="decision" class="band">
+            <h3>Decision rapida</h3>
+            <p>Arranca por el caso de uso, no por el nombre de la rama.</p>
+            <div class="decision-grid">
+              <article class="case-card">
+                <span class="tag">branch limpia</span>
+                <h4>Un ticket esta mezclado en main</h4>
+                <p>
+                  Usar <code>/feature-branch</code>. Extrae el diff real desde un
+                  tag base, separa codigo y bump, crea el tag antes del merge.
+                </p>
+              </article>
+              <article class="case-card">
+                <span class="tag green">commit / MR</span>
+                <h4>Ya tengo cambios listos</h4>
+                <p>
+                  Usar <code>/sky-commit-changes</code> y despues
+                  <code>/sky-create-mr</code>. En V2 usar las variantes
+                  <code>/sky-v2-*</code>.
+                </p>
+              </article>
+              <article class="case-card">
+                <span class="tag amber">deploy</span>
+                <h4>Dejar un repo listo para QA/Stage</h4>
+                <p>
+                  Usar <code>/sky-prepare-deploy</code>. Calcula version,
+                  changelog, lockfile, validacion, commit, push y Step Jira.
+                </p>
+              </article>
+              <article class="case-card">
+                <span class="tag amber">epica</span>
+                <h4>Release de varios tickets/repos</h4>
+                <p>
+                  Usar <code>/sky-generate-release-notes</code> y luego
+                  <code>/sky-create-release-branch</code>.
+                </p>
+              </article>
+              <article class="case-card">
+                <span class="tag red">retag</span>
+                <h4>Hay que mover tags existentes</h4>
+                <p>
+                  Usar <code>/sky-rebuild-tag-chain</code>. No es un branch
+                  normal: preserva ancestry entre tags y crea backups.
+                </p>
+              </article>
+              <article class="case-card">
+                <span class="tag">repos</span>
+                <h4>Falta ubicar o clonar un repo</h4>
+                <p>
+                  Usar <code>/sky-gitlab-search-repos</code> o
+                  <code>/sky-gitlab-clone-repo</code>.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section id="stage" class="band">
+            <h3>Flujo Stage normal</h3>
+            <p>
+              Sirve cuando hay que aislar un ticket o dejar una rama de deploy
+              para Stage sin arrastrar commits ajenos.
+            </p>
+            <div class="flow">
+              <div class="step">
+                <span class="num">1</span>
+                <div>
+                  <h4><code>/feature-branch VC-XXXX</code></h4>
+                  <p>
+                    Detecta repo, tag base, commits candidatos y si el caso en
+                    realidad debe ir a tag-chain. No usa cherry-pick: aplica el
+                    diff neto del cambio.
+                  </p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="num">2</span>
+                <div>
+                  <h4>Commit de codigo y commit de release</h4>
+                  <p>
+                    El codigo queda separado del bump. El commit de bump contiene
+                    changelog, version y lockfile si corresponde.
+                  </p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="num">3</span>
+                <div>
+                  <h4><code>/sky-tag-creator</code></h4>
+                  <p>
+                    Crea el tag anotado <code>vX.Y.Z</code> sobre el commit de
+                    release. El mensaje sale del changelog de ese commit.
+                  </p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="num">4</span>
+                <div>
+                  <h4>Merge <code>origin/main</code> con <code>--no-ff</code></h4>
+                  <p>
+                    Se hace despues del tag. El MR final no debe usar squash,
+                    porque la historia <code>codigo -> bump/tag -> merge</code>
+                    tiene significado.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="callout warning" style="margin-top: 16px">
+              <p>
+                Si el pedido menciona recrear tags, retag, tag mayor, mismo
+                contenido con otra version o hotfix sobre tag anterior, no sigas
+                con este flujo: cambia a <code>/sky-rebuild-tag-chain</code>.
+              </p>
+            </div>
+          </section>
+
+          <section id="release-notes" class="band">
+            <h3>Release por epica o multi-ticket</h3>
+            <p>
+              Este camino arma primero la evidencia y despues crea ramas de
+              release por repo.
+            </p>
+            <div class="split">
+              <article class="skill-card">
+                <span class="tag">documentar</span>
+                <h4><code>/sky-generate-release-notes</code></h4>
+                <p>
+                  Lee tickets, identifica repos, busca MRs abiertos o mergeados,
+                  lista commits por repo y genera <code>release_notes.md</code>.
+                  Si hay MRs pendientes, los marca como pendientes.
+                </p>
+              </article>
+              <article class="skill-card">
+                <span class="tag green">branch release</span>
+                <h4><code>/sky-create-release-branch</code></h4>
+                <p>
+                  Toma el <code>release_notes.md</code>, crea
+                  <code>release/vX.Y.Z</code>, aplica los commits, actualiza
+                  changelog/version y publica la rama. Para tags delega en
+                  <code>/sky-tag-creator</code>.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section id="tag-chain" class="band">
+            <h3>Rearmar tags ya creados</h3>
+            <p>
+              Usar cuando hay que insertar un hotfix en un tag anterior y hacer
+              que tags posteriores queden construidos encima de ese tag corregido.
+            </p>
+            <div class="flow">
+              <div class="step">
+                <span class="num">1</span>
+                <div>
+                  <h4>Confirmar el estado final esperado</h4>
+                  <p>
+                    Antes de tocar refs, la skill pide confirmar base tag, tags a
+                    recrear en orden, source refs/backups y estrategia de changelog.
+                  </p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="num">2</span>
+                <div>
+                  <h4>Snapshot y backups</h4>
+                  <p>
+                    Verifica refs locales/remotas usando commits peeled
+                    <code>vX.Y.Z^{}</code> y crea tags
+                    <code>backup/...</code> antes de mover nada.
+                  </p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="num">3</span>
+                <div>
+                  <h4>Reconstruir cada tag en orden</h4>
+                  <p>
+                    Para cada tag crea delta historico, bump/changelog y tag
+                    anotado. Valida que el tag anterior sea ancestro del siguiente.
+                  </p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="num">4</span>
+                <div>
+                  <h4>Push solo con aprobacion</h4>
+                  <p>
+                    Tags usan <code>--force</code> solo despues de validacion y
+                    aprobacion. Branches usan <code>--force-with-lease</code>.
+                    El MR va sin squash.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="callout danger" style="margin-top: 16px">
+              <p>
+                El objetivo no es solo que los archivos queden iguales. El
+                objetivo es que la historia Git quede correcta:
+                <code>base corregida -> tag 1 -> tag 2 -> HEAD</code>.
+              </p>
+            </div>
+          </section>
+
+          <section id="v2" class="band">
+            <h3>Release-Unit V2</h3>
+            <p>
+              Usar cuando <code>main</code> funciona como QA y Stage/Prod debe
+              promover solo una parte de lo que ya entro a <code>main</code>.
+            </p>
+            <div class="cards">
+              <article class="skill-card">
+                <span class="tag">metadata</span>
+                <h4><code>/sky-v2-release-unit</code></h4>
+                <p>
+                  Resuelve <code>Release-Unit</code>, label Jira
+                  <code>ru-*</code>, epica, scope y base tag.
+                </p>
+              </article>
+              <article class="skill-card">
+                <span class="tag">implementar</span>
+                <h4><code>/sky-v2-take-ticket</code></h4>
+                <p>
+                  Implementa ticket con gate de Release-Unit. Si la metadata esta
+                  pendiente, la deja visible sin bloquear codigo cuando el scope
+                  tecnico es claro.
+                </p>
+              </article>
+              <article class="skill-card">
+                <span class="tag green">commit</span>
+                <h4><code>/sky-v2-commit-changes</code></h4>
+                <p>
+                  Crea commit con trailers parseables:
+                  <code>Release-Unit</code>, <code>Epic</code>,
+                  <code>Refs</code>, <code>Deploy-Scope</code> y flags.
+                </p>
+              </article>
+              <article class="skill-card">
+                <span class="tag green">MR</span>
+                <h4><code>/sky-v2-create-mr</code></h4>
+                <p>
+                  Abre MR con metadata. Feature/fix normal debe squashar a un
+                  commit parseable; release/tag-chain no debe usar squash.
+                </p>
+              </article>
+              <article class="skill-card">
+                <span class="tag amber">release</span>
+                <h4><code>/sky-v2-prepare-release</code></h4>
+                <p>
+                  Genera release branch desde <code>baseTag</code> y manifest,
+                  cherry-pickeando solo commits de la Release Unit.
+                </p>
+              </article>
+              <article class="skill-card">
+                <span class="tag red">soporte tags</span>
+                <h4><code>/sky-tag-creator</code></h4>
+                <p>
+                  Sigue siendo obligatorio para tags reales. V2 no crea tags a
+                  mano con <code>git tag -m</code>.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section id="matrix" class="band">
+            <h3>Matriz de skills</h3>
+            <div class="matrix-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Skill</th>
+                    <th>Se llama cuando</th>
+                    <th>Entrega</th>
+                    <th>Handoff comun</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>/feature-branch</code></td>
+                    <td>Ticket mezclado en <code>main</code>; rama limpia desde tag.</td>
+                    <td>Branch con codigo, bump, tag y merge <code>--no-ff</code>.</td>
+                    <td><code>/sky-create-mr</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-commit-changes</code></td>
+                    <td>Cambios listos para guardar.</td>
+                    <td>Commit Sky con staging selectivo.</td>
+                    <td><code>/sky-create-mr</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-create-mr</code></td>
+                    <td>Branch lista para revision GitLab.</td>
+                    <td>MR con template Sky y source branch cleanup.</td>
+                    <td><code>/sky-code-review</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-prepare-deploy</code></td>
+                    <td>Repo listo para versionar y dejar deployable.</td>
+                    <td>Changelog, version, lockfile, validacion, commit, push, Step Jira.</td>
+                    <td><code>/sky-create-mr</code> o <code>/sky-deploy-doc</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-generate-release-notes</code></td>
+                    <td>Epica o grupo de tickets para release.</td>
+                    <td><code>release_notes.md</code> con tickets, repos, MRs y commits.</td>
+                    <td><code>/sky-create-release-branch</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-create-release-branch</code></td>
+                    <td>Crear ramas <code>release/vX.Y.Z</code> desde release notes.</td>
+                    <td>Release branch publicada y tag opcional.</td>
+                    <td><code>/sky-tag-creator</code>, <code>/sky-create-mr</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-tag-creator</code></td>
+                    <td>Crear, recrear, renombrar o validar tag <code>vX.Y.Z</code>.</td>
+                    <td>Tag anotado validado contra changelog y commit peeled.</td>
+                    <td>Vuelve al flujo padre.</td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-rebuild-tag-chain</code></td>
+                    <td>Retag, hotfix en tag anterior, tag mayor, cadena de tags.</td>
+                    <td>Cadena reconstruida con backups, tags y ancestry validado.</td>
+                    <td><code>/sky-create-mr</code> sin squash.</td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-gitlab-search-repos</code></td>
+                    <td>No sabes el path o URL del repo.</td>
+                    <td>Lista de repos GitLab por path, name, url o full.</td>
+                    <td><code>/sky-gitlab-clone-repo</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-gitlab-clone-repo</code></td>
+                    <td>Repo falta localmente.</td>
+                    <td>Repo clonado desde <code>sky_airline</code>.</td>
+                    <td>Skill del ticket/deploy correspondiente.</td>
+                  </tr>
+                  <tr>
+                    <td><code>/sky-gitlab-vulnerabilities</code></td>
+                    <td>Revisar SAST, dependency scanning, container o secrets.</td>
+                    <td>Vulnerabilidades accionables del proyecto.</td>
+                    <td><code>/sky-create-mr</code> si se corrige algo.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="rules" class="band">
+            <h3>Reglas criticas</h3>
+            <div class="rules-grid">
+              <article class="rule-card">
+                <h4>No push a main/master</h4>
+                <p>
+                  Siempre trabajar en branch. Si hay que publicar, se pushea la
+                  branch o tag, nunca <code>main</code> directo.
+                </p>
+              </article>
+              <article class="rule-card">
+                <h4>Tags antes del merge main</h4>
+                <p>
+                  El tag apunta al commit de bump/release. El merge
+                  <code>--no-ff origin/main</code> viene despues.
+                </p>
+              </article>
+              <article class="rule-card">
+                <h4>Peeled commit siempre</h4>
+                <p>
+                  Para validar tags anotados usar <code>git rev-parse vX.Y.Z^{}</code>,
+                  no solo el hash del objeto tag.
+                </p>
+              </article>
+              <article class="rule-card">
+                <h4>No squash en release/tag-chain</h4>
+                <p>
+                  La ancestry importa. Squash destruye la estructura que permite
+                  auditar tags y merges.
+                </p>
+              </article>
+              <article class="rule-card">
+                <h4>Backups antes de retag</h4>
+                <p>
+                  Antes de mover un tag remoto, crear y validar
+                  <code>backup/vX.Y.Z-before-...</code>.
+                </p>
+              </article>
+              <article class="rule-card">
+                <h4>Preguntar si el outcome es ambiguo</h4>
+                <p>
+                  En tag mayor, mismo contenido u otra version, confirmar
+                  changelog, source tag, target tag y MR esperado antes de tocar refs.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section id="examples" class="band soft">
+            <h3>Ejemplos rapidos</h3>
+            <div class="split">
+              <div>
+                <h4>Preparar un ticket para Stage desde main mezclado</h4>
+                <pre><code>/feature-branch VC-567
+/sky-create-mr main</code></pre>
+              </div>
+              <div>
+                <h4>Commit y MR clasico</h4>
+                <pre><code>/sky-commit-changes
+/sky-create-mr</code></pre>
+              </div>
+              <div>
+                <h4>Release multi-ticket</h4>
+                <pre><code>/sky-generate-release-notes VC-772
+/sky-create-release-branch path/release_notes.md</code></pre>
+              </div>
+              <div>
+                <h4>Rearmar tags existentes</h4>
+                <pre><code>/sky-rebuild-tag-chain
+# base: v2.11.0
+# targets: v2.11.0, v2.12.0
+# backups antes de force-push</code></pre>
+              </div>
+              <div>
+                <h4>V2 main-as-QA</h4>
+                <pre><code>/sky-v2-release-unit VC-934
+/sky-v2-commit-changes
+/sky-v2-create-mr
+/sky-v2-prepare-release</code></pre>
+              </div>
+              <div>
+                <h4>Buscar y clonar repo</h4>
+                <pre><code>/sky-gitlab-search-repos payment url
+/sky-gitlab-clone-repo process-payment-link-bl</code></pre>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <footer class="footer">
+          Fuente operativa: <code>/Users/erick/Sky/SkySkills</code>. Esta guia
+          resume los contratos de las skills; ante duda, manda el caso al flujo
+          padre y valida refs actuales antes de modificar tags o ramas remotas.
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
